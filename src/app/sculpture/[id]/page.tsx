@@ -282,7 +282,8 @@ export default function ShaderCanvas() {
             try {
               const savedData = JSON.parse(savedDataString);
               versionMismatch.current =
-                !!savedData && savedData.version != DataManagerVersion;
+                !savedData ||
+                (!!savedData && savedData.version != DataManagerVersion);
 
               if (sculptureId != "infinite") {
                 dataManager.setData(savedData);

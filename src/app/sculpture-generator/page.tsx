@@ -232,7 +232,8 @@ export default function ShaderCanvas() {
           setTimeout(() => setPageState(PageState.COMPLETE), 1000);
         } else {
           versionMismatch.current =
-            !!savedData && savedData.version != DataManagerVersion;
+            !savedData ||
+            (!!savedData && savedData.version != DataManagerVersion);
           dataManager.setData(defaults as UiData);
           localStorage.setItem(
             "sculpture-generator",

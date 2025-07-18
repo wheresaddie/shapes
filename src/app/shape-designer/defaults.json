@@ -1,0 +1,262 @@
+{
+  "globals": {
+    "perf": "GOOD",
+    "camTgt": {
+      "x": 0,
+      "y": 0.4,
+      "z": 0
+    },
+    "camHAngle": -0.08,
+    "camVAngle": 0.17,
+    "camDist": 0.9,
+    "orbit": 0,
+    "boundingBoxPos": {
+      "x": 0,
+      "y": 0.5,
+      "z": 0
+    },
+    "boundingBoxDims": {
+      "x": 2,
+      "y": 2,
+      "z": 2
+    },
+    "showDebug": false,
+    "debugMode": 0,
+    "mapScale": 0.3,
+    "showBoxes": false,
+    "showBoundingBox": false
+  },
+  "performanceSettings": {
+    "GOOD": {
+      "maxRays": 10,
+      "marchingSteps": 150,
+      "distanceThreshold": 0.0001,
+      "maxDistance": 2,
+      "giLength": 0.018,
+      "giStrength": 0.005,
+      "aoStrength": 0.004,
+      "shadowRange": 5,
+      "shadowAccuracy": 24,
+      "roughReflectSamples": 0,
+      "roughRefractSamples": 0,
+      "globalIllumination": true,
+      "reflection": true,
+      "transparency": true,
+      "lighting": true,
+      "shadows": false,
+      "surfaceBlur": false
+    },
+    "BETTER": {
+      "maxRays": 10,
+      "marchingSteps": 150,
+      "distanceThreshold": 0.0001,
+      "maxDistance": 2,
+      "giLength": 0.018,
+      "giStrength": 0.005,
+      "aoStrength": 0.004,
+      "shadowRange": 5,
+      "shadowAccuracy": 24,
+      "roughReflectSamples": 0,
+      "roughRefractSamples": 0,
+      "globalIllumination": true,
+      "reflection": true,
+      "transparency": true,
+      "lighting": true,
+      "shadows": false,
+      "surfaceBlur": true
+    },
+    "BEST": {
+      "maxRays": 10,
+      "marchingSteps": 150,
+      "distanceThreshold": 0.0001,
+      "maxDistance": 2,
+      "giLength": 0.018,
+      "giStrength": 0.005,
+      "aoStrength": 0.004,
+      "shadowRange": 10,
+      "shadowAccuracy": 24,
+      "roughReflectSamples": 4,
+      "roughRefractSamples": 4,
+      "globalIllumination": true,
+      "reflection": true,
+      "transparency": true,
+      "lighting": true,
+      "shadows": true,
+      "surfaceBlur": true
+    }
+  },
+  "shapes": [
+    {
+      "type": 1,
+      "pos": {
+        "x": 0.0,
+        "y": 0.4,
+        "z": 0.0
+      },
+      "r": 0.1,
+      "mat": 1,
+      "rot": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "uuid": "DEFAULT"
+    }
+  ],
+  "materials": [
+    {
+      "name": "Floor Material",
+      "emissive": false,
+      "color": {
+        "r": 1,
+        "g": 1,
+        "b": 1
+      },
+      "secondaryColor": {
+        "r": 1,
+        "g": 1,
+        "b": 1
+      },
+      "kd": 3.0,
+      "ior": 1.4,
+      "reflectivity": 0.64,
+      "roughness": 1.0,
+      "metallic": 0.25,
+      "transparency": 0,
+      "attenuation": 0.00001,
+      "attenuationStrength": 0,
+      "edgeTintStrength": 0,
+      "glow": 0,
+      "intRef": false,
+      "reflectRoughness": 0.07,
+      "refractRoughness": 0,
+      "uuid": "FLOOR",
+      "surfaceBlur": 1.0
+    },
+    {
+      "name": "Default Material",
+      "color": {
+        "r": 0.9176470588235294,
+        "g": 0.7215686274509804,
+        "b": 0.7215686274509804
+      },
+      "secondaryColor": {
+        "r": 1,
+        "g": 0.7019607843137254,
+        "b": 0
+      },
+      "kd": 0.1,
+      "ior": 1.5,
+      "reflectivity": 0.05,
+      "intRef": false,
+      "roughness": 0.1187527037691325,
+      "reflectRoughness": 0,
+      "refractRoughness": 0,
+      "surfaceBlur": 0,
+      "metallic": 0,
+      "transparency": 0.8782159591838717,
+      "attenuation": 0.7688714951276779,
+      "attenuationStrength": 36.4,
+      "edgeTintStrength": 1,
+      "uuid": "DEFAULT"
+    }
+  ],
+  "lights": [
+    {
+      "type": 0,
+      "color": {
+        "r": 0.4,
+        "g": 0.4,
+        "b": 0.4
+      },
+      "ranged": false,
+      "r": 1.0,
+      "dir": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "strength": 0.5,
+      "uuid": "DEFAULT",
+      "castsShadow": false,
+      "name": "Omni"
+    },
+    {
+      "type": 1,
+      "color": {
+        "r": 0.9125,
+        "g": 0.7178,
+        "b": 0.5323
+      },
+      "ranged": false,
+      "r": 1.666664455247962,
+      "dir": {
+        "x": -34,
+        "y": 5,
+        "z": -26
+      },
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "strength": 5,
+      "uuid": "691da1aa-2b90-4b91-b1ae-0a1293152364",
+      "castsShadow": true,
+      "name": "Sun Light"
+    },
+    {
+      "type": 1,
+      "color": {
+        "r": 0.6791667938232422,
+        "g": 0.7263889938745742,
+        "b": 0.95
+      },
+      "ranged": false,
+      "r": 10,
+      "dir": {
+        "x": 34,
+        "y": -5,
+        "z": 26
+      },
+      "pos": {
+        "x": -3.600018310546874,
+        "y": 3.0032421875,
+        "z": 1.09332275390625
+      },
+      "strength": 1,
+      "uuid": "1d635939-8625-45b8-accc-a6489fbcbca5",
+      "castsShadow": true,
+      "name": "Sky Light"
+    },
+    {
+      "type": 2,
+      "strength": 1.3000000000000003,
+      "color": {
+        "r": 0.6625,
+        "g": 0.5655,
+        "b": 0.5655
+      },
+      "ranged": false,
+      "r": 1,
+      "dir": {
+        "x": 0.1,
+        "y": -1.8,
+        "z": 0.2
+      },
+      "pos": {
+        "x": -0.7666687011718749,
+        "y": 6,
+        "z": 0.7
+      },
+      "uuid": "7242a5a3-d8cc-498a-bce8-1fd6daee6eb7",
+      "castsShadow": true,
+      "name": "Rose Light"
+    }
+  ]
+}

@@ -65,7 +65,7 @@ vec4 overrideColor = vec4(1.,0.,0.,1.);
 
 struct Material {
   bool emissive, intRef;
-  vec3 color, innerColor, glowColor;
+  vec3 color, innerColor;
   float kd, ior, reflectivity, roughness, reflectRoughness, refractRoughness, metallic, transparency, attenuation, attenuationStrength, glow;
 };
 

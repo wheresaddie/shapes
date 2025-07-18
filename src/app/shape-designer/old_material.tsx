@@ -134,11 +134,6 @@ export function ShaderMaterial({
           y: material.innerColor.g,
           z: material.innerColor.b,
         },
-        glowColor: {
-          x: material.glowColor.r,
-          y: material.glowColor.g,
-          z: material.glowColor.b,
-        },
         kd: material.kd,
         ior: material.ior,
         reflectivity: Math.floor(material.reflectivity * 1000) / 1000,

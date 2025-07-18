@@ -70,7 +70,6 @@ export interface Material {
   emissive: boolean;
   color: Color;
   innerColor: Color;
-  glowColor: Color;
   kd: number;
   ior: number;
   reflectivity: number;
@@ -706,6 +705,7 @@ export class RaymarchingUI {
       this.updateShapeMaterial();
     });
     f.addBinding(mat, "color", { label: "Color", color: { type: "float" } });
+    mat.innerColor = mat.innerColor ?? { r: 1.0, g: 1.0, b: 1.0 };
     f.addBinding(mat, "innerColor", {
       label: "Inner Color",
       color: { type: "float" },
@@ -915,7 +915,6 @@ export class RaymarchingUI {
       emissive: false,
       color: { r: 1, g: 1, b: 1 },
       innerColor: { r: 1, g: 1, b: 1 },
-      glowColor: { r: 1, g: 1, b: 1 },
       kd: 0.5,
       ior: 1.5,
       reflectivity: 0.5,

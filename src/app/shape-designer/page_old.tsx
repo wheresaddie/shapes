@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { invalidate, Canvas } from "@react-three/fiber";
 import { EffectComposer, FXAA } from "@react-three/postprocessing";
 import { OrthographicCamera } from "@react-three/drei";
-import { ShaderMaterial } from "./material";
+import { ShaderMaterial } from "./old_material";
 import NoSSR from "react-no-ssr";
-import RaymarchingUI, { UiData } from "./ui";
+import RaymarchingUI from "./ui";
+import { UiData } from "@/lib/datamanager";
 
 function useWindowSize() {
   const [size, setSize] = useState({ innerWidth: 400, innerHeight: 400 });

@@ -9,13 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dimforge/rapier3d": "^0.18.0-beta.0",
     "@react-three/drei": "^9.120.0",
     "@react-three/fiber": "^9.0.0-rc.1",
     "@react-three/postprocessing": "^3.0.4",
+    "@tweakpane/plugin-essentials": "^0.2.1",
     "@types/react-no-ssr": "^1.1.8",
     "clsx": "^2.1.1",
     "depcheck": "^1.4.7",
+    "eta": "^3.5.0",
     "next": "^15.1.7",
+    "rand-seed": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-no-ssr": "^1.1.0",

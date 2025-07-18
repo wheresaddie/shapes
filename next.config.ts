@@ -4,6 +4,15 @@ const nextConfig: NextConfig = {
   devIndicators: {
     appIsrStatus: false,
   },
+  async redirects() {
+    return [
+      {
+        source: "/", // The incoming request path pattern (main page)
+        destination: "/sculpture/infinite", // The path you want to redirect to
+        permanent: true, // true for 308 (permanent), false for 307 (temporary)
+      },
+    ];
+  },
   webpack: (config, options) => {
     // Enable WebAssembly support
     config.experiments = {

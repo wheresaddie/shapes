@@ -289,6 +289,8 @@ export default function ShaderCanvas() {
                 dataManager.setData(savedData);
                 setSelected(dataManager.data.current.globals.perf);
                 setPageState(PageState.COMPLETE);
+              } else {
+                setSelected(savedData.perf);
               }
             } catch (err) {
               versionMismatch.current = !!err;
@@ -310,13 +312,16 @@ export default function ShaderCanvas() {
         }
       } else if (pageState == PageState.DATA_LOADED) {
         if (compiledRef.current) {
-          const savedData = localStorage.getItem(sculptureId as string);
+          const savedDataString = localStorage.getItem(sculptureId as string);
           if (
             sculptureId == "infinite" &&
-            savedData &&
+            savedDataString &&
             !versionMismatch.current
           ) {
-            setSelected(savedData);
+            const savedData = JSON.parse(savedDataString);
+            if (savedData) {
+              setSelected(savedData.perf);
+            }
             setPageState(PageState.READY_TO_GENERATE);
           } else {
             setPageState(PageState.TESTING_PERFORMANCE);
@@ -445,6 +450,7 @@ export default function ShaderCanvas() {
         let perf = "GOOD";
         try {
           const savedData = JSON.parse(savedDataString);
+          perf = savedData.perf;
           if (savedData.perf == "LOW") perf = "GOOD";
           if (savedData.perf == "MEDIUM") perf = "BETTER";
           if (savedData.perf == "HIGH") perf = "BEST";

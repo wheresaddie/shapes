@@ -106,13 +106,13 @@ export default function ShaderCanvas() {
       const perf = PerformanceMode[selected as keyof typeof PerformanceMode];
       setPerf(perf);
       const savedDataString = localStorage.getItem("sculpture-generator");
+      dataManager.data.current.globals.perf = perf;
       if (savedDataString) {
         localStorage.setItem(
           "sculpture-generator",
           JSON.stringify(dataManager.getData().current)
         );
       }
-      dataManager.data.current.globals.perf = perf;
       dataManager.recompileShader();
       dataManager.updateAllUniforms();
     }

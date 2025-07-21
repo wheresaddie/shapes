@@ -41,8 +41,8 @@ float dot2( in vec3 v ) { return dot(v,v); }
 float ndot( in vec2 a, in vec2 b ) { return a.x*b.x - a.y*b.y; }
 
 const int NUM_SHAPES = <%= shapes.length %>;
-const int NUM_MATERIALS = <%= shapes.length + 1 %>; //The shapes and the floor
-const int NUM_LIGHTS = 5;
+const int NUM_MATERIALS = <%= materials.length %>; //The shapes and the floor
+const int NUM_LIGHTS = <%= lights.length %>;
 const int NUM_RAYS = <%= maxRays %>;
 
 //Shapes
@@ -108,9 +108,6 @@ struct Shape {
   int mat;
   mat3 rot;
 };
-<% } %>
-
-/*
 struct Light {
   int type;
   float strength;
@@ -119,12 +116,14 @@ struct Light {
   float r;
   vec3 dir;
   vec3 pos;
+  bool castsShadow;
 };
-*/
+<% } %>
 
 <% if(devMode) { %>
 uniform Shape shapes[NUM_SHAPES];
 Shape debugShapes[NUM_SHAPES + 1];
+uniform Light lights[NUM_LIGHTS];
 <% } else { %>
 uniform vec3 shapePositions[NUM_SHAPES];
 uniform mat3 shapeRotations[NUM_SHAPES];
@@ -1259,73 +1258,141 @@ vec3 applyLights(vec3 pos, vec3 rd, vec3 nor, vec3 ref, vec3 albedo, Material ma
     vec3 lin = vec3(0.0); 
     vec3 V = -rd;
 
-    <% lights.forEach((l, i) => { %>
-        vec3 L<%= i %>, lightCol<%= i %> = vec3(<%= _f(l.color.r) %>, <%= _f(l.color.g) %>, <%= _f(l.color.b) %>);
-        float attenuation<%= i %> = 1.0;
+    <% if(devMode) { %>
+      for(int i = 0; i < NUM_LIGHTS + ZERO; i++)
+      {
+        Light l = lights[i];
+        vec3 L, lightCol = l.color;
+        float attenuation = 1.0;
 
-        <% if(l.type == 0) { %>
-            lin += lightCol<%= i %> * <%= _f(l.strength) %> * mat.kd * albedo; // Ambient light only affects diffuse
-        <% } else { %>
-
-          if(lighting)
-          {
-            <% if(l.type == 1) { %>
-                L<%= i %> = normalize(-vec3(<%= _f(l.dir.x) %>, <%= _f(l.dir.y) %>, <%= _f(l.dir.z) %>));
-            <% } %>
-            <% if(l.type == 2) { %>
-                vec3 toLight<%= i %> = vec3(<%= _f(l.pos.x) %> - pos.x, <%= _f(l.pos.y) %> - pos.y, <%= _f(l.pos.z) %> - pos.z);
-                float dist2<%= i %> = dot(toLight<%= i %>, toLight<%= i %>);
-                float dist<%= i %> = sqrt(dist2<%= i %>);
-                L<%= i %> = toLight<%= i %> / dist<%= i %>;
-                <% if(l.ranged) { %>
-                    attenuation<%= i %> *= clamp(1.0 - dist<%= i %> / <%= _f(l.r) %>, 0.0, 1.0);
-                <% } %>
-            <% } %>
-
-            // Shadow
-            float shadow<%= i %> = 1.0;
-            if(shadows && <%= l.castsShadow ? "true" : " false" %>)
-            {
-              shadow<%= i %> = calcSoftShadow(pos + nor * 0.01, L<%= i %>, 0.01, shadowRange);
-            }
-
-            // Half vector for Cook-Torrance
-            vec3 H<%= i %> = normalize(L<%= i %> + V);
-
-            float NdotL<%= i %> = max(dot(nor, L<%= i %>), 0.0);
-            float NdotV<%= i %> = max(dot(nor, V), 0.0);
-            float NdotH<%= i %> = max(dot(nor, H<%= i %>), 0.0);
-            float VdotH<%= i %> = max(dot(V, H<%= i %>), 0.0);
-
-            // Fresnel term (Schlick)
-            vec3 F0<%= i %> = mix(vec3(0.04), albedo, mat.metallic);
-            vec3 F<%= i %> = F0<%= i %> + (1.0 - F0<%= i %>) * pow(1.0 - VdotH<%= i %>, 5.0);
-
-            // Geometry term (Smith GGX Approximation)
-            float alpha<%= i %> = mat.roughness * mat.roughness;
-            float k<%= i %> = (alpha<%= i %> + 1.0) * (alpha<%= i %> + 1.0) / 8.0;
-            float G_V<%= i %> = NdotV<%= i %> / (NdotV<%= i %> * (1.0 - k<%= i %>) + k<%= i %>);
-            float G_L<%= i %> = NdotL<%= i %> / (NdotL<%= i %> * (1.0 - k<%= i %>) + k<%= i %>);
-            float G<%= i %> = G_V<%= i %> * G_L<%= i %>;
-
-            // Normal distribution function (GGX)
-            float a2<%= i %> = alpha<%= i %> * alpha<%= i %>;
-            float d<%= i %> = (NdotH<%= i %> * NdotH<%= i %>) * (a2<%= i %> - 1.0) + 1.0;
-            float D<%= i %> = a2<%= i %> / (PI * d<%= i %> * d<%= i %>);
-
-            // Cook-Torrance specular BRDF
-            vec3 spec<%= i %> = (F<%= i %> * G<%= i %> * D<%= i %>) / max(4.0 * NdotL<%= i %> * NdotV<%= i %>, 0.001);
-
-            // Diffuse (Lambert or none for metals)
-            vec3 kd<%= i %> = (1.0 - F<%= i %>) * (1.0 - mat.metallic);
-            vec3 diffuse<%= i %> = kd<%= i %> * albedo / PI;
-
-            // Combine
-            vec3 contrib<%= i %> = (diffuse<%= i %> + spec<%= i %>) * <%= _f(l.strength) %> * lightCol<%= i %> * NdotL<%= i %> * attenuation<%= i %> * shadow<%= i %>;
-            lin += contrib<%= i %>;
+        if(l.type == 0) {
+            lin += lightCol * l.strength * mat.kd * albedo; // Ambient light only affects diffuse
+        } else if(lighting) {
+          if(l.type == 1) {
+            L = normalize(-l.dir);
           }
-        <% } %>
-    <% }) %>
+          if(l.type == 2) {
+            vec3 toLight = l.pos - pos;;
+            float dist2 = dot(toLight, toLight);
+            float dist = sqrt(dist2);
+            L = toLight / dist;
+            if(l.ranged) {
+              attenuation *= clamp(1.0 - dist / l.r, 0.0, 1.0);
+            }
+          }
+
+          // Shadow
+          float shadow = 1.0;
+          if(shadows && l.castsShadow)
+          {
+            shadow = calcSoftShadow(pos + nor * 0.01, L, 0.01, shadowRange);
+          }
+
+          // Half vector for Cook-Torrance
+          vec3 H = normalize(L + V);
+
+          float NdotL = max(dot(nor, L), 0.0);
+          float NdotV = max(dot(nor, V), 0.0);
+          float NdotH = max(dot(nor, H), 0.0);
+          float VdotH = max(dot(V, H), 0.0);
+
+          // Fresnel term (Schlick)
+          vec3 F0 = mix(vec3(0.04), albedo, mat.metallic);
+          vec3 F = F0 + (1.0 - F0) * pow(1.0 - VdotH, 5.0);
+
+          // Geometry term (Smith GGX Approximation)
+          float alpha = mat.roughness * mat.roughness;
+          float k = (alpha + 1.0) * (alpha + 1.0) / 8.0;
+          float G_V = NdotV / (NdotV * (1.0 - k) + k);
+          float G_L = NdotL / (NdotL * (1.0 - k) + k);
+          float G = G_V * G_L;
+
+          // Normal distribution function (GGX)
+          float a2 = alpha * alpha;
+          float d = (NdotH * NdotH) * (a2 - 1.0) + 1.0;
+          float D = a2 / (PI * d * d);
+
+          // Cook-Torrance specular BRDF
+          vec3 spec = (F * G * D) / max(4.0 * NdotL * NdotV, 0.001);
+
+          // Diffuse (Lambert or none for metals)
+          vec3 kd = (1.0 - F) * (1.0 - mat.metallic);
+          vec3 diffuse = kd * albedo / PI;
+
+          // Combine
+          vec3 contrib = (diffuse + spec) * l.strength * lightCol * NdotL * attenuation * shadow;
+          lin += contrib;
+        }
+      } 
+    <% } else { %>
+      <% lights.forEach((l, i) => { %>
+          vec3 L<%= i %>, lightCol<%= i %> = vec3(<%= _f(l.color.r) %>, <%= _f(l.color.g) %>, <%= _f(l.color.b) %>);
+          float attenuation<%= i %> = 1.0;
+
+          <% if(l.type == 0) { %>
+              lin += lightCol<%= i %> * <%= _f(l.strength) %> * mat.kd * albedo; // Ambient light only affects diffuse
+          <% } else { %>
+
+            if(lighting)
+            {
+              <% if(l.type == 1) { %>
+                  L<%= i %> = normalize(-vec3(<%= _f(l.dir.x) %>, <%= _f(l.dir.y) %>, <%= _f(l.dir.z) %>));
+              <% } %>
+              <% if(l.type == 2) { %>
+                  vec3 toLight<%= i %> = vec3(<%= _f(l.pos.x) %> - pos.x, <%= _f(l.pos.y) %> - pos.y, <%= _f(l.pos.z) %> - pos.z);
+                  float dist2<%= i %> = dot(toLight<%= i %>, toLight<%= i %>);
+                  float dist<%= i %> = sqrt(dist2<%= i %>);
+                  L<%= i %> = toLight<%= i %> / dist<%= i %>;
+                  <% if(l.ranged) { %>
+                      attenuation<%= i %> *= clamp(1.0 - dist<%= i %> / <%= _f(l.r) %>, 0.0, 1.0);
+                  <% } %>
+              <% } %>
+
+              // Shadow
+              float shadow<%= i %> = 1.0;
+              if(shadows && <%= l.castsShadow ? "true" : " false" %>)
+              {
+                shadow<%= i %> = calcSoftShadow(pos + nor * 0.01, L<%= i %>, 0.01, shadowRange);
+              }
+
+              // Half vector for Cook-Torrance
+              vec3 H<%= i %> = normalize(L<%= i %> + V);
+
+              float NdotL<%= i %> = max(dot(nor, L<%= i %>), 0.0);
+              float NdotV<%= i %> = max(dot(nor, V), 0.0);
+              float NdotH<%= i %> = max(dot(nor, H<%= i %>), 0.0);
+              float VdotH<%= i %> = max(dot(V, H<%= i %>), 0.0);
+
+              // Fresnel term (Schlick)
+              vec3 F0<%= i %> = mix(vec3(0.04), albedo, mat.metallic);
+              vec3 F<%= i %> = F0<%= i %> + (1.0 - F0<%= i %>) * pow(1.0 - VdotH<%= i %>, 5.0);
+
+              // Geometry term (Smith GGX Approximation)
+              float alpha<%= i %> = mat.roughness * mat.roughness;
+              float k<%= i %> = (alpha<%= i %> + 1.0) * (alpha<%= i %> + 1.0) / 8.0;
+              float G_V<%= i %> = NdotV<%= i %> / (NdotV<%= i %> * (1.0 - k<%= i %>) + k<%= i %>);
+              float G_L<%= i %> = NdotL<%= i %> / (NdotL<%= i %> * (1.0 - k<%= i %>) + k<%= i %>);
+              float G<%= i %> = G_V<%= i %> * G_L<%= i %>;
+
+              // Normal distribution function (GGX)
+              float a2<%= i %> = alpha<%= i %> * alpha<%= i %>;
+              float d<%= i %> = (NdotH<%= i %> * NdotH<%= i %>) * (a2<%= i %> - 1.0) + 1.0;
+              float D<%= i %> = a2<%= i %> / (PI * d<%= i %> * d<%= i %>);
+
+              // Cook-Torrance specular BRDF
+              vec3 spec<%= i %> = (F<%= i %> * G<%= i %> * D<%= i %>) / max(4.0 * NdotL<%= i %> * NdotV<%= i %>, 0.001);
+
+              // Diffuse (Lambert or none for metals)
+              vec3 kd<%= i %> = (1.0 - F<%= i %>) * (1.0 - mat.metallic);
+              vec3 diffuse<%= i %> = kd<%= i %> * albedo / PI;
+
+              // Combine
+              vec3 contrib<%= i %> = (diffuse<%= i %> + spec<%= i %>) * <%= _f(l.strength) %> * lightCol<%= i %> * NdotL<%= i %> * attenuation<%= i %> * shadow<%= i %>;
+              lin += contrib<%= i %>;
+            }
+          <% } %>
+      <% }) %>
+    <% } %>
 
     // Global Illumination
     if(globalIllumination)
@@ -1366,11 +1433,15 @@ vec4 render(in vec3 ro, in vec3 rd, in vec3 rdx, in vec3 rdy, in mat3 viewMatrix
     perfStats.rayCount = 0;
 
     // Initialize background color
+    <% if(devMode) { %>
+      vec3 bg = lights[0].strength * lights[0].color * materials[0].kd * materials[0].color;
+    <% } else { %>
     vec3 bg = vec3(
       <%= _f(lights[0].strength * lights[0].color.r) %> * materials[0].kd * materials[0].color.x,
       <%= _f(lights[0].strength * lights[0].color.g) %> * materials[0].kd * materials[0].color.y,
       <%= _f(lights[0].strength * lights[0].color.b) %> * materials[0].kd * materials[0].color.z
     );
+    <% } %>
     vec3 col = vec3(0.);
     float w = 0.0;
 

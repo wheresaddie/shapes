@@ -104,11 +104,11 @@ export class RaymarchingUI {
 
     this.setupGlobalFolder();
     this.pane.addBlade({ view: "separator" });
+    this.setupPerformanceFolder();
+    this.pane.addBlade({ view: "separator" });
     this.setupShapesFolder();
     this.pane.addBlade({ view: "separator" });
     this.setupMaterialsFolder();
-    this.pane.addBlade({ view: "separator" });
-    this.setupPerformanceFolder();
     this.pane.addBlade({ view: "separator" });
     this.setupFloorFolder();
     this.pane.addBlade({ view: "separator" });
@@ -503,11 +503,6 @@ export class RaymarchingUI {
     });
     this.dataManager.data.current.materials[0].intRef =
       this.dataManager.data.current.materials[0].intRef ?? false;
-    f.addBinding(this.dataManager.data.current.materials[0], "intRef", {
-      label: "Internal Reflection",
-    }).on("change", () => {
-      this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
-    });
     f.addBinding(this.dataManager.data.current.materials[0], "roughness", {
       min: 0,
       max: 1,
@@ -530,20 +525,7 @@ export class RaymarchingUI {
     ).on("change", () => {
       this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
     });
-    this.dataManager.data.current.materials[0].refractRoughness =
-      this.dataManager.data.current.materials[0].refractRoughness ?? 0.0;
-    f.addBinding(
-      this.dataManager.data.current.materials[0],
-      "refractRoughness",
-      {
-        min: 0,
-        max: 1,
-        step: 0.01,
-        label: "Refract Roughness",
-      }
-    ).on("change", () => {
-      this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
-    });
+    this.dataManager.data.current.materials[0].intRef = false;
     this.dataManager.data.current.materials[0].surfaceBlur =
       this.dataManager.data.current.materials[0].surfaceBlur ?? 0.0;
     f.addBinding(this.dataManager.data.current.materials[0], "surfaceBlur", {
@@ -678,12 +660,6 @@ export class RaymarchingUI {
 
   addShapeBinding(shape: Shape, f: FolderApi) {
     // Add shape-specific bindings
-    delete shape.r;
-    delete shape.r1;
-    delete shape.r2;
-    delete shape.h;
-    delete shape.c;
-    delete shape.a;
     switch (shape.type) {
       case ShapeType.OCTAHEDRON:
       case ShapeType.SPHERE:
@@ -1008,6 +984,12 @@ export class RaymarchingUI {
       label: "Type",
     }).on("change", () => {
       this.removeShapeBinding(f);
+      delete shape.r;
+      delete shape.r1;
+      delete shape.r2;
+      delete shape.h;
+      delete shape.c;
+      delete shape.a;
       this.addShapeBinding(shape, f);
     });
     f.addBinding(shape, "pos", {
@@ -1117,6 +1099,13 @@ export class RaymarchingUI {
       step: 0.01,
       label: "Refract Roughness",
     });
+    mat.surfaceBlur = mat.surfaceBlur ?? 0.0;
+    f.addBinding(mat, "surfaceBlur", {
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "Surface Blur",
+    });
     f.addBinding(mat, "metallic", {
       min: 0,
       max: 1,
@@ -1182,16 +1171,16 @@ export class RaymarchingUI {
     });
 
     this.dataManager.data.current.materials.forEach((mat, index) => {
-      if (!mat.uuid) {
-        if (index == 0) {
-          mat.uuid = "FLOOR";
-        } else if (index == 1) {
-          mat.uuid = "DEFAULT";
-        } else {
-          mat.uuid = uuidv4();
+      if (index > 0) {
+        if (!mat.uuid) {
+          if (index == 1) {
+            mat.uuid = "DEFAULT";
+          } else {
+            mat.uuid = uuidv4();
+          }
         }
+        this.addMaterial(mat);
       }
-      this.addMaterial(mat);
     });
   }
 }

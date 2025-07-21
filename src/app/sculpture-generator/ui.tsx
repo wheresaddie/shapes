@@ -201,17 +201,11 @@ export class RaymarchingUI {
       title: "Global Settings",
       expanded: false,
     });
-    f.addBinding(this.dataManager.data.current.globals, "perf", {
-      label: "Detail",
-      options: [
-        { text: "Good", value: PerformanceMode.GOOD },
-        { text: "Better", value: PerformanceMode.BETTER },
-        { text: "Best", value: PerformanceMode.BEST },
-      ],
+    f.addBinding(this.dataManager.data.current.globals, "devMode", {
+      label: "Dev Mode",
     }).on("change", () => {
-      if (this.dataManager.setPerfUpdated) {
-        this.dataManager.setPerfUpdated((prev) => prev + 1);
-      }
+      this.dataManager.setGlobalsUpdated((prev) => prev + 1);
+      this.dataManager.recompileShader();
     });
     f.addBinding(this.dataManager.data.current.globals, "camTgt", {
       label: "Camera Target",
@@ -459,6 +453,15 @@ export class RaymarchingUI {
       tabs.pages[i]
         .addBinding(p, "transparency", {
           label: "Transparency",
+        })
+        .on("change", () => {
+          if (this.dataManager.setPerformanceSettingsUpdated) {
+            this.dataManager.setPerformanceSettingsUpdated((prev) => prev + 1);
+          }
+        });
+      tabs.pages[i]
+        .addBinding(p, "internalReflections", {
+          label: "Internal Reflections",
         })
         .on("change", () => {
           if (this.dataManager.setPerformanceSettingsUpdated) {
@@ -1359,13 +1362,7 @@ export class RaymarchingUI {
     }).on("change", () => {
       this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
     });
-    this.dataManager.data.current.materials[0].intRef =
-      this.dataManager.data.current.materials[0].intRef ?? false;
-    f.addBinding(this.dataManager.data.current.materials[0], "intRef", {
-      label: "Internal Reflection",
-    }).on("change", () => {
-      this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
-    });
+    this.dataManager.data.current.materials[0].intRef = false;
     f.addBinding(this.dataManager.data.current.materials[0], "roughness", {
       min: 0,
       max: 1,
@@ -1388,20 +1385,7 @@ export class RaymarchingUI {
     ).on("change", () => {
       this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
     });
-    this.dataManager.data.current.materials[0].refractRoughness =
-      this.dataManager.data.current.materials[0].refractRoughness ?? 0.0;
-    f.addBinding(
-      this.dataManager.data.current.materials[0],
-      "refractRoughness",
-      {
-        min: 0,
-        max: 1,
-        step: 0.01,
-        label: "Refract Roughness",
-      }
-    ).on("change", () => {
-      this.dataManager.setMaterialsUpdated!((prev) => prev + 1);
-    });
+    this.dataManager.data.current.materials[0].refractRoughness = 0.0;
     this.dataManager.data.current.materials[0].surfaceBlur =
       this.dataManager.data.current.materials[0].surfaceBlur ?? 0.0;
     f.addBinding(this.dataManager.data.current.materials[0], "surfaceBlur", {

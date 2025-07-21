@@ -42,6 +42,7 @@
       "globalIllumination": true,
       "reflection": true,
       "transparency": true,
+      "internalReflections": false,
       "lighting": true,
       "shadows": false,
       "surfaceBlur": false
@@ -61,6 +62,7 @@
       "globalIllumination": true,
       "reflection": true,
       "transparency": true,
+      "internalReflections": false,
       "lighting": true,
       "shadows": false,
       "surfaceBlur": true
@@ -80,6 +82,7 @@
       "globalIllumination": true,
       "reflection": true,
       "transparency": true,
+      "internalReflections": true,
       "lighting": true,
       "shadows": true,
       "surfaceBlur": true
@@ -106,7 +109,6 @@
   "materials": [
     {
       "name": "Floor Material",
-      "emissive": false,
       "color": {
         "r": 1,
         "g": 1,
@@ -126,7 +128,6 @@
       "attenuation": 0.00001,
       "attenuationStrength": 0,
       "edgeTintStrength": 0,
-      "glow": 0,
       "intRef": false,
       "reflectRoughness": 0.07,
       "refractRoughness": 0,

@@ -10,7 +10,7 @@ type Vec2 = { x: number; y: number };
 type Vec3 = { x: number; y: number; z: number };
 type Color = { r: number; g: number; b: number };
 
-export const Version = 100;
+export const Version = 101;
 
 export enum InterfaceMode {
   DEVELOPMENT = 0,
@@ -98,6 +98,7 @@ export interface GlobalSettings {
   globalIllumination?: boolean;
   reflection?: boolean;
   transparency?: boolean;
+  internalReflections?: boolean;
   lighting?: boolean;
   shadows?: boolean;
   surfaceBlur?: boolean;
@@ -118,6 +119,7 @@ export interface PerformanceSettings {
   globalIllumination: boolean;
   reflection: boolean;
   transparency: boolean;
+  internalReflections: boolean;
   lighting: boolean;
   shadows: boolean;
   surfaceBlur: boolean;
@@ -466,6 +468,7 @@ export class DataManager {
         globalIllumination: true,
         reflection: true,
         transparency: true,
+        internalReflections: false,
         lighting: true,
         shadows: true,
         surfaceBlur: true,
@@ -485,6 +488,7 @@ export class DataManager {
         globalIllumination: true,
         reflection: true,
         transparency: true,
+        internalReflections: false,
         lighting: true,
         shadows: true,
         surfaceBlur: true,
@@ -504,6 +508,7 @@ export class DataManager {
         globalIllumination: true,
         reflection: true,
         transparency: true,
+        internalReflections: true,
         lighting: true,
         shadows: true,
         surfaceBlur: true,
@@ -606,6 +611,7 @@ export class DataManager {
       this.setTemplateVariables((prev) => {
         const tv = {
           shapes: shapesWithout,
+          materials: this.data.current.materials,
           lights: this.data.current.lights,
           showBoxes: this.data.current.globals.showBoxes,
           showBoundingBox: this.data.current.globals.showBoundingBox,

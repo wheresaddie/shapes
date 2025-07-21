@@ -128,6 +128,7 @@ export function ShaderMaterial({
       shapeRotations: { value: [] },
       shapeIsRotated: { value: [] },
       materials: { value: [] },
+      lights: { value: [] },
       globalIllumination: { value: true },
       lighting: { value: true },
       shadows: { value: true },
@@ -188,6 +189,7 @@ export function ShaderMaterial({
           });
         });
         uniforms.shapes.value = shapes;
+        uniforms.lights.value = uiUniforms.lights;
       } else {
         const shapePositions = [...uiUniforms.shapes.map((s) => s.pos)];
         uniforms.shapePositions.value = shapePositions.map(
@@ -242,7 +244,7 @@ export function ShaderMaterial({
         reflectivity: performanceSettings.reflection
           ? Math.floor(material.reflectivity * 1000) / 1000
           : 0,
-        intRef: material.intRef,
+        intRef: performanceSettings.internalReflections && material.intRef,
         roughness: material.roughness,
         reflectRoughness: material.reflectRoughness,
         refractRoughness: material.refractRoughness,

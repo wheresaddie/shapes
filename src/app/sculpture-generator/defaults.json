@@ -50,6 +50,7 @@
       "globalIllumination": true,
       "reflection": true,
       "transparency": true,
+      "internalReflections": false,
       "lighting": true,
       "shadows": false,
       "surfaceBlur": false
@@ -69,6 +70,7 @@
       "globalIllumination": true,
       "reflection": true,
       "transparency": true,
+      "internalReflections": false,
       "lighting": true,
       "shadows": false,
       "surfaceBlur": true
@@ -88,6 +90,7 @@
       "globalIllumination": true,
       "reflection": true,
       "transparency": true,
+      "internalReflections": true,
       "lighting": true,
       "shadows": true,
       "surfaceBlur": true
